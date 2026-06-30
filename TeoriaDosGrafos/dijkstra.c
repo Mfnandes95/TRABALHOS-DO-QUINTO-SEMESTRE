@@ -2,9 +2,8 @@
 #include <limits.h>
 #include <stdbool.h>
 
-#define V 5 // Você pode alterar este valor conforme o número de vértices
+#define V 5
 
-//Função para encontrar o vértice de menor distância
 int minDistancia(int dist[], bool sptSet[]) {
     int min = INT_MAX, min_index;
     for (int v = 0; v < V; v++)
@@ -15,12 +14,20 @@ int minDistancia(int dist[], bool sptSet[]) {
     return min_index;
 }
 
-//Implementação do Algoritmo
+// Função recursiva para imprimir o caminho
+void printCaminho(int parent[], int j) {
+    if (parent[j] == -1) return;
+    printCaminho(parent, parent[j]);
+    printf(" -> %d", j);
+}
+
 void dijkstra(int grafo[V][V], int src) {
     int dist[V];
     bool sptSet[V];
+    int parent[V]; // Novo array para rastrear o caminho
 
     for (int i = 0; i < V; i++) {
+        parent[i] = -1;
         dist[i] = INT_MAX;
         sptSet[i] = false;
     }
@@ -33,16 +40,19 @@ void dijkstra(int grafo[V][V], int src) {
 
         for (int v = 0; v < V; v++)
             if (!sptSet[v] && grafo[u][v] && dist[u] != INT_MAX 
-                && dist[u] + grafo[u][v] < dist[v])
+                && dist[u] + grafo[u][v] < dist[v]) {
+                parent[v] = u; // Registra o predecessor
                 dist[v] = dist[u] + grafo[u][v];
+            }
     }
 
-    printf("\nVertice \t Distancia da Origem\n");
-    for (int i = 0; i < V; i++)
-        printf("%d \t\t %d\n", i, dist[i]);
+    printf("\nVertice\tDistancia\tCaminho");
+    for (int i = 0; i < V; i++) {
+        printf("\n%d \t %d \t\t %d", i, dist[i], src);
+        if (i != src) printCaminho(parent, i);
+    }
+    printf("\n");
 }
-
-//Função principal do código
 int main() {
     int grafo[V][V];
     int origem;
